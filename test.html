@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Test Cámara</title>
+<style>
+  body,html{margin:0;height:100%;background:#000;display:grid;place-items:center;color:#fff;font:16px/1.4 system-ui;}
+  video{width:100vw;height:100vh;object-fit:cover}
+  #msg{position:fixed;top:10px;left:10px;background:rgba(0,0,0,.5);padding:.5rem .75rem;border-radius:.5rem}
+</style>
+<body>
+  <div id="msg">Probando cámara…</div>
+  <video id="v" autoplay playsinline muted></video>
+  <script>
+    const v = document.getElementById('v');
+    const m = document.getElementById('msg');
+    (async () => {
+      try {
+        const s = await navigator.mediaDevices.getUserMedia({video: {facingMode: 'environment'}});
+        v.srcObject = s;
+        m.textContent = 'OK: cámara en uso';
+      } catch (e) {
+        m.textContent = 'Error: ' + e.name + ' - ' + e.message;
+      }
+    })();
+  </script>
+</body>
+</html>
