@@ -3,3 +3,11 @@ html, body { margin:0; padding:0; height:100%; background:#000; font-family:syst
 #startBtn { padding:.45rem .7rem; border-radius:.6rem; border:none; background:#1e88e5; color:#fff; font-weight:600; }
 #status { font-weight:600; }
 #hint { margin-left:auto; opacity:.85; }
+
+/* Forzar que el video/canvas de AR ocupe toda la pantalla y no quede tapado */
+a-scene, canvas, video {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
