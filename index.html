@@ -17,17 +17,35 @@
 </head>
 
 <script>
-  const hint = document.getElementById('hint');
-  const tick = () => {
-    const v = document.querySelector('video');
-    if (v) {
-      hint.textContent = `Video state: readyState=${v.readyState} | ${v.paused?'paused':'playing'}`;
-      if (v.paused) { v.play().catch(()=>{}); }
-    } else {
-      hint.textContent = 'Buscando video…';
-    }
-  };
-  setInterval(tick, 1000);
+  window.addEventListener('DOMContentLoaded', () => {
+    const scene = document.querySelector('a-scene');
+    if (!scene) return;
+    scene.addEventListener('loaded', () => {
+      const canvas = scene.canvas || document.querySelector('canvas');
+      if (!canvas) return;
+      canvas.addEventListener('webglcontextlost', (e) => {
+        e.preventDefault();
+        alert('Se perdió el contexto WebGL. Reducimos carga o cambiamos de navegador.');
+      }, { passive: false });
+    });
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const statusEl = document.getElementById('hint'); // puede ser null
+    const tick = () => {
+      if (!statusEl) return; // si no existe, salimos silenciosamente
+      const v = document.querySelector('video');
+      if (v) {
+        statusEl.textContent = `Video: ${v.paused ? 'paused' : 'playing'} | readyState=${v.readyState}`;
+        if (v.paused) { v.play().catch(()=>{}); }
+      } else {
+        statusEl.textContent = 'Buscando video…';
+      }
+    };
+    setInterval(tick, 1000);
+  });
 </script>
 
 <body>
