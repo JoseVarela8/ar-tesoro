@@ -1,11 +1,44 @@
-html, body { margin:0; padding:0; height:100%; background:#000; font-family:system-ui, -apple-system, Segoe UI, Roboto; }
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #000;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
 
+/* HUD */
 #hud {
-  position: fixed; left: 0; right: 0; top: 0;
+  position: fixed;
+  left: 0; right: 0; top: 0;
   display: flex; gap: .75rem; align-items: center;
-  padding: .6rem .8rem; color: #fff; z-index: 5;
+  padding: .6rem .8rem;
+  color: #fff;
+  z-index: 5;
   background: rgba(0,0,0,.25);
 }
-#startBtn { padding:.45rem .7rem; border-radius:.6rem; border:none; background:#1e88e5; color:#fff; font-weight:600; }
-#status { font-weight:600; }
-#hint { margin-left:auto; opacity:.85; }
+#startBtn {
+  padding: .45rem .7rem;
+  border-radius: .6rem;
+  border: none;
+  background: #1e88e5;
+  color: #fff;
+  font-weight: 600;
+}
+#status { font-weight: 600; }
+#hint { margin-left: auto; opacity: .85; }
+
+/* Canvas WebGL opaco (evita “pantalla negra”) */
+canvas.a-canvas, .a-canvas {
+  background: #000 !important;
+}
+
+/* Si AR.js agrega un <video>, que tape la pantalla (fallback visual) */
+#arjs-video, .arjs-video {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+}
