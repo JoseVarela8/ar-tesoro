@@ -2,109 +2,47 @@
 <html lang="es">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1, user-scalable=no" />
-    <title>Búsqueda del Tesoro AR</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, user-scalable=no" />
+  <title>Búsqueda del Tesoro AR</title>
 
-  <!-- A-Frame 1.2.0 -->
-<script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <!-- A-Frame 1.3.0 -->
+  <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  <!-- AR.js 3.4.5 (A-Frame build) -->
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.min.js"></script>
 
-<!-- AR.js 3.3.2 (build estable) -->
-<script src="https://raw.githack.com/AR-js-org/AR.js/3.3.2/aframe/build/aframe-ar.js"></script>
 
 
-    <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 
-<script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const scene = document.querySelector('a-scene');
-    if (!scene) return;
-    scene.addEventListener('loaded', () => {
-      const canvas = scene.canvas || document.querySelector('canvas');
-      if (!canvas) return;
-      canvas.addEventListener('webglcontextlost', (e) => {
-        e.preventDefault();
-        alert('Se perdió el contexto WebGL. Reducimos carga o cambiamos de navegador.');
-      }, { passive: false });
-    });
-  });
-</script>
-
-<script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const statusEl = document.getElementById('hint'); // puede ser null
-    const tick = () => {
-      if (!statusEl) return; // si no existe, salimos silenciosamente
-      const v = document.querySelector('video');
-      if (v) {
-        statusEl.textContent = `Video: ${v.paused ? 'paused' : 'playing'} | readyState=${v.readyState}`;
-        if (v.paused) { v.play().catch(()=>{}); }
-      } else {
-        statusEl.textContent = 'Buscando video…';
-      }
-    };
-    setInterval(tick, 1000);
-  });
-</script>
 
 <body>
-    <!-- HUD (interfaz arriba de la cámara) -->
-    <div id="hud">
-        <button id="startBtn">🎧 Activar sonido</button>
-        <div id="status">Pistas encontradas: <span id="count">0</span> / 3</div>
-        <div id="hint">Apuntá la cámara a los marcadores impresos.</div>
-    </div>
+  <!-- HUD (interfaz arriba de la cámara) -->
+  <div id="hud">
+    <button id="startBtn">🎧 Activar sonido</button>
+    <div id="status">Pistas encontradas: <span id="count">0</span> / 3</div>
+    <div id="hint">Apuntá la cámara a los marcadores impresos.</div>
+  </div>
 
-    <!-- Escena AR: usa la cámara y detecta marcadores -->
-    <a-scene embedded renderer="alpha: true; precision: mediump;" arjs="sourceType: webcam; debugUIEnabled: false;">
-        <!-- Luces para que se vean mejor los objetos -->
-        <a-entity light="type: ambient; intensity: 0.8"></a-entity>
-        <a-entity light="type: directional; intensity: 0.6" position="1 1 0"></a-entity>
+  <!-- Escena AR: usa la cámara y detecta marcadores -->
+  <a-scene embedded renderer="alpha: true; antialias: false; precision: lowp; powerPreference: low-power;" arjs="sourceType: webcam;
+        debugUIEnabled: false;
+        detectionMode: mono;
+        cameraParametersUrl: ./assets/camera_para.dat">
+    <!-- Un (1) marcador para test -->
+    <a-marker preset="hiro" id="m1" emitevents="true">
+      <a-box position="0 0.5 0" depth="0.3" height="0.3" width="0.3" color="#E53935"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 4000"></a-box>
+    </a-marker>
 
-        <!-- PRESET 1: HIRO (no requiere .patt) -->
-        <a-marker preset="hiro" id="m1" emitevents="true" smooth="true" smoothCount="5" smoothTolerance="0.01"
-            smoothThreshold="2">
-            <a-box depth="0.3" height="0.3" width="0.3" position="0 0.15 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 4000"></a-box>
-            <a-text value="Pista 1 (Hiro)" align="center" position="0 0.6 0"></a-text>
-        </a-marker>
-
-        <!-- PRESET 2: KANJI (no requiere .patt) -->
-        <a-marker preset="kanji" id="m2" emitevents="true" smooth="true" smoothCount="5" smoothTolerance="0.01"
-            smoothThreshold="2">
-            <a-sphere radius="0.2" position="0 0.2 0"
-                animation="property: position; to: 0 0.35 0; dir: alternate; loop: true; dur: 1200"></a-sphere>
-            <a-text value="Pista 2 (Kanji)" align="center" position="0 0.6 0"></a-text>
-        </a-marker>
-
-        <!-- PATRÓN PERSONALIZADO (.patt) -->
-        <a-marker type="pattern" url="./assets/pattern-tres.patt" id="m3" emitevents="true" smooth="true"
-            smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
-            <a-cone radius-bottom="0.25" height="0.5" position="0 0.25 0"
-                animation="property: scale; to: 1.2 1.2 1.2; dir: alternate; loop: true; dur: 900"></a-cone>
-            <a-text value="Pista 3 (Personalizada)" align="center" position="0 0.7 0"></a-text>
-        </a-marker>
-
-        <!-- Tesoro (aparece cuando encontrás los 3 marcadores) -->
-        <a-entity id="treasure" position="0 0 -1" visible="false">
-            <a-torus-knot radius="0.3" radius-tubular="0.06" position="0 0.4 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 3500"></a-torus-knot>
-            <a-text value="¡Tesoro Encontrado!" align="center" position="0 0 0" scale="1.4 1.4 1.4"></a-text>
-            <a-sound id="winSound" src="#sfx" autoplay="false" position="0 0 0"></a-sound>
-        </a-entity>
-
-        <!-- Cámara -->
-        <a-entity camera></a-entity>
-
-        <!-- Assets (sonido de victoria) -->
-        <a-assets>
-            <audio id="sfx" src="./assets/sfx-treasure.mp3" preload="auto" crossorigin="anonymous"></audio>
-        </a-assets>
-    </a-scene>
+    <!-- Cámara -->
+    <a-entity camera></a-entity>
+  </a-scene>
 
 
-    <script src="./app.js"></script>
+
+  <script src="./app.js"></script>
 </body>
 
 <script>
