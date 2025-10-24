@@ -32,13 +32,3 @@ canvas.a-canvas, .a-canvas {
   background: #000 !important;
 }
 
-/* Si AR.js agrega un <video>, que tape la pantalla (fallback visual) */
-#arjs-video, .arjs-video {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  object-fit: contain;
-  z-index: 0;
-  pointer-events: none;
-}
